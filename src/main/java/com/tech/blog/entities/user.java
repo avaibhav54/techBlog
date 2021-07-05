@@ -8,7 +8,13 @@ private String password;
 private String gender;
 private Timestamp dateTime;
 private String about;
-
+private String image;
+public String getImage() {
+	return image;
+}
+public void setImage(String image) {
+	this.image = image;
+}
 public user(int id, String name, String email, String password, String gender, Timestamp dateTime, String about) {
 	super();
 	this.id = id;

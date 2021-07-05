@@ -68,6 +68,7 @@ public class userDao {
 				u.setGender(set.getString("gender"));
 				u.setAbout(set.getString("about"));
 				u.setDateTime(set.getTimestamp("rdate"));
+				u.setImage(set.getString("image"));
 				
 			}
 		} catch (Exception e) {
@@ -76,5 +77,28 @@ public class userDao {
 		}
 		
 		return u;
+	}
+	
+	public boolean updateUser(user u)
+	{
+		boolean f=false;
+		try {
+			
+			String query="update user set name=?,mail=?,password=?,about=?,image=? where id=?";
+			PreparedStatement  pstm=con.prepareStatement(query);
+			pstm.setString(1,u.getName() );
+			pstm.setString(2, u.getEmail());
+			pstm.setString(3, u.getPassword());
+			pstm.setString(4, u.getAbout());
+			pstm.setString(5, u.getImage());
+			pstm.setInt(6,u.getId());
+			pstm.executeUpdate();
+			f=true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			
+		}
+		return f;
 	}
 }

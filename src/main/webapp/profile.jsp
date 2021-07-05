@@ -79,6 +79,21 @@ if(u==null)
 		</div>
 	</nav>
 
+
+
+		<%
+				message m=(message)session.getAttribute("msg");
+				if(m!=null)
+				{
+					%>
+					
+					<div class="alert  <%=m.getCssClass() %>" role="alert">
+<%= m.getContent() %>
+</div>
+					<%
+					session.removeAttribute("msg");
+				}
+				%>
 <!-- Button trigger modal -->
 
 
@@ -94,10 +109,11 @@ if(u==null)
       </div>
       <div class="modal-body">
        <div  class="container  text-center" >
-       <img class="img-fluid  "  style="border-radius:50%; max-width:150px;"" alt="" src="img/us.jpg">
+       <img class="img-fluid  "  style="border-radius:50%; max-width:150px;"" alt="" src="img/<%=u.getImage()%>">
         
         <h5 class="modal-title  mt-3" id="exampleModalLabel"><%=u.getName() %></h5>
-     
+      
+        <div id="profile-details">
      <table class="table">
 
   <tbody>
@@ -122,11 +138,60 @@ if(u==null)
     </tr>
   </tbody>
 </table>
+</div>
+<div id="profile-edit"  style="display:none;">
+<h3 class="mt-2">Please Edit Carefully!!</h3>
+<form action="editServlet"   method="post"   enctype="multipart/form-data">
+ <table class="table">
+
+  <tbody>
+    <tr>
+      <th scope="row">ID:</th>
+      <td><%=u.getId() %></td>
+    </tr>
+        <tr>
+      <th scope="row">Name</th>
+      <td> <input type="text"  class="form-control" name="name"  value="<%=u.getName()%>"> </td>
+    </tr>
+    
+        <tr>
+      <th scope="row">Email</th>
+      <td> <input type="email"  class="form-control" name="mail"  value="<%=u.getEmail()%>"> </td>
+    </tr>
+    
+    
+      <th scope="row">Password</th>
+      <td> <input type="password"  class="form-control" name="password"  value="<%=u.getPassword()%>"> </td>
+    </tr>
+      <tr>
+      <th scope="row">Gender</th>
+      <td><%=u.getGender().toUpperCase() %></td>
+    </tr>       <tr>
+      <th scope="row">About</th>
+   <td>
+      <textarea name="about" placeholder ="" class="form-control"   rows="2" ><%=u.getAbout() %></textarea>
+		
+   </td>
+    </tr>  <tr>
+      <th scope="row">New Profile</th>
+   <td>
+   <input type="file"   name="image" class="form-control">	
+   </td>
+    </tr> 
+    							
+  </tbody>
+</table>
+<div class="container">
+<button type="submit"   class="btn btn-outline-primary">Save</button>
+</div>
+</form>
+</div>
+
        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Edit</button>
+        <button id="edit-profile" type="button" class="btn btn-primary">Edit</button>
       </div>
     </div>
   </div>
@@ -144,5 +209,33 @@ if(u==null)
 		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 		crossorigin="anonymous"></script>
 	<script src="js/my.js" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+	$(document).ready(function()
+	{
+
+		let editStatus=false;
+		$('#edit-profile').click(function(){
+			console.log(editStatus);
+if(editStatus==false)
+	{
+			$('#profile-details').hide();
+			$('#profile-edit').show();
+			editStatus=true;
+			$(this).text("Back");
+			
+	}
+else
+	{
+	$('#profile-details').show();
+	$('#profile-edit').hide();
+
+	$(this).text("Edit");
+	editStatus=false;
+	}
+		})
+	});
+	
+	</script>
 </body>
 </html>
