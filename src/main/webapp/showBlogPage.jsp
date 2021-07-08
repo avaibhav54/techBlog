@@ -1,9 +1,11 @@
 
+
+<%@page import="com.tech.blog.dao.likeDao"%>
+<%@page import="com.tech.blog.dao.userDao"%>
+<%@page isErrorPage="true"%>
 <%@page import="com.tech.blog.helper.ConnectionProvider"%>
 <%@page import="com.tech.blog.dao.postDao"%>
 <%@page import="java.util.*"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
 <%@page import="com.tech.blog.entities.*"%>
 <%@page errorPage="error.jsp"%>
 <%
@@ -13,23 +15,64 @@ if (u == null) {
 }
 %>
 
+<%
+int post_id = Integer.parseInt(request.getParameter("postId"));
+
+postDao p = new postDao(ConnectionProvider.getConnection());
+Posts po = p.getAllPostsByPostId(post_id);
+%>
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 	crossorigin="anonymous">
 
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/hi_IN/sdk.js#xfbml=1&version=v11.0" nonce="OY7snRNR"></script>
+
+<title><%=po.getpTitle()%></title>
 <link href="css/style.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style type="text/css">
 
 
+.post-title
+{
+font-weight:100;
+	font-size:30px;
+}
+
+.post-content
+{
+font-weight:100;
+	font-size:25px;
+}
+.post-date
+{
+font-style:italic;
+font-weight:bold;
+}
+.user-info
+{
+
+	font-size:20px;
+}
+
+.row-user
+{
+border:1px solid 	#e2e2e2;
+padding-top:15px;
+}
+</style>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark primary-background">
@@ -44,7 +87,7 @@ if (u == null) {
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active"><a class="nav-link" href="#"> <span
+				<li class="nav-item active"><a class="nav-link" href="profile.jsp"> <span
 						class="fa fa-comments	
         "></span> Vaibhav <span
 						class="sr-only">(current)</span></a></li>
@@ -86,65 +129,72 @@ if (u == null) {
 			</ul>
 		</div>
 	</nav>
+	<div class="container">
+		<div class="row  my-4">
+			<div class="col-md-8  offset-md-2">
+				<div class="card">
+					<div class="card-header   primary-background text-white">
+						<h4 class="post-title"><%=po.getpTitle()%></h4>
+					</div>
+					<div class="card-body">
+					<img class="my-2 card-img-top "   src="blog_pic/<%=po.getpPic()%>"
+				alt="Card image cap">
+			<%
+			int yu=po.getUid();
+			userDao uy=new userDao(ConnectionProvider.getConnection());
+			String uname=uy.getUserById(yu);
+			%>
+					<div class="row   my-3    row-user">
+					<div class="col-md-8">
+					<p class="user-info"><a href="#"> <%= uname%> </a>has posted</p>
+					</div>
+					<div class="col-md-4">
+					<p class="post-date"><%=po.getpDate().toLocaleString() %></p>
+					</div>
+					</div>
+					<p class="post-content"><%=po.getpContent() %></p>
+					<br>
+					<br>
+					
+					<div class="post-code">
+					<pre><%=po.getpCode() %></pre>
+					</div>
+						<%
+				if (!po.getGithub().equals("#")) {
+				%>
 
-
-
-	<%
-	message m = (message) session.getAttribute("msg");
-	if (m != null) {
-	%>
-
-	<div class="alert  <%=m.getCssClass()%>" role="alert">
-		<%=m.getContent()%>
-	</div>
-	<%
-	session.removeAttribute("msg");
-	}
-	%>
-
-	<!-- main body of the page -->
-
-	<main>
-		<div class="container">
-			<div class="row   mt-4">
-	
-		
-				<div class="col-md-4">
-				<!-- categories -->
-				<div class="list-group">
-  <a onclick="getPosts(0,this)"  href="#" class="  c-link primary-background list-group-item list-group-item-action active">
-    All Posts
-  </a>
-		<%
-								postDao pod = new postDao(ConnectionProvider.getConnection());
-								ArrayList<category> lst = pod.getAllCategories();
-								for (category c : lst) {
-								%>
-
-<a onclick="getPosts(<%=c.getId() %>,this)" href="#" class="  c-link list-group-item list-group-item-action disabled"><%=c.getName() %></a>
-
-								<%
-								}
-								%>
-</div>
-				</div>
-				<div class="col-md-8"   >
-				<!-- posts -->
-				<div id="loader"  class="  text-center container">
-				<i class="fa fa-refresh  fa-4x  fa-spin"></i>
-				<h3 class="mt-3"> Loading......</h3>
-				</div>
-				
-				<div  id="post-container"  class="container-fluid">
-				
-				</div>
-				</div>
+				<a href="<%=po.getGithub()%>">See on Github</a>
+				<%
+				}
+				%>
+					
+					</div>
+<div class="card-footer   primary-background text-center">
+<%
+likeDao ld=new likeDao(ConnectionProvider.getConnection());
+int cou=ld.countLike(po.getPid());
+%>
+			<a href=""   onclick="doLike(<%=po.getPid() %>,<%=u.getId() %>)"  class="btn btn-outline-light  btn-sm"><i class="   fa fa-thumbs-o-up"></i><span class="like-counter"><%=cou %></span></a>
+			<a href=""  class="btn btn-outline-light  btn-sm"><i class="fa fa-commenting-o"></i><span>10</span></a>
+			
 			
 			</div>
-		</div>
-	</main>
+			
+			<div class="card-footer">
+			<div class="fb-comments" data-href="http://localhost:8080/TechBlog/showBlogPage.jsp?postId=<%=po.getPid() %>" data-width="" data-numposts="5"></div>
+			
+			</div>
 
-	<!-- Button trigger modal -->
+				</div>
+
+
+			</div>
+
+
+		</div>
+
+
+	</div>
 
 
 	<!-- Modal -->
@@ -308,7 +358,7 @@ if (u == null) {
 							<textarea name="code" class="form-control"
 								placeholder="Enter  Your Program (if any)" rows="5" cols=""></textarea>
 						</div>
-								<div class="form-group">
+						<div class="form-group">
 							<input name=github type="text" placeholder="Github Link()"
 								class="form-control">
 						</div>
@@ -325,6 +375,7 @@ if (u == null) {
 			</div>
 		</div>
 	</div>
+
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
@@ -416,39 +467,6 @@ else
 		})
 	})
 	</script>
-	
-	<script type="text/javascript">
-	function getPosts(catId,temp)
-	{
-		$("#loader").show();
-		$("#post-container").hide();
-		$(".c-link").removeClass('active');
-		$(".c-link").removeClass('primary-background');
-		
-		$.ajax({
-			url:"loadPost.jsp",
-			data:{cid:catId},
-			success:  function(data,textStatus,jqXHR){
-				//console.log(data);
 
-		$("#loader").hide();
-		$("#post-container").show();
-					
-	$("#post-container").html(data);			
-	$(temp).addClass('primary-background');
-	$(temp).addClass('active');
-	
-				
-				}
-		
-		})
-
-	}
-	
-	$(document).ready(function(e)
-			{
-		getPosts(0,$(".c-link")[0]);
-			})
-	</script>
 </body>
 </html>

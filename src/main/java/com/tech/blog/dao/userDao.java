@@ -48,6 +48,7 @@ public class userDao {
 	
 	//for login
 	
+	
 	public user getUser(String email,String password)
 	{
 		user u=null;
@@ -101,4 +102,28 @@ public class userDao {
 		}
 		return f;
 	}
+
+	
+	public String getUserById(int id)
+	{
+		String name="";
+		try {
+			String query="Select * from user where id=?";
+			PreparedStatement pstm=con.prepareStatement(query);
+			pstm.setInt(1,id);
+			ResultSet set=pstm.executeQuery();
+			if(set.next())
+			{
+				 name=set.getString("name");
+				
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return name;
+	}
+	
+	
 }

@@ -1,7 +1,12 @@
 <%@page import="com.tech.blog.helper.ConnectionProvider"%>
 <%@page import="java.sql.*"%>
+<%@page import="com.tech.blog.helper.ConnectionProvider"%>
+<%@page import="com.tech.blog.dao.postDao"%>
+<%@page import="java.util.*"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@page import="com.tech.blog.entities.*"%>
+<%@page errorPage="error.jsp"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,7 +30,6 @@ clip-path: polygon(50% 0%, 100% 0, 100% 86%, 71% 96%, 15% 90%, 0 96%, 0 1%);
 
 </head>
 <body>
-hello 
 	<%@include file="navbar.jsp"%>
 
 	<div class="container-fluid   m-0 p-0">
@@ -57,79 +61,47 @@ hello
 
 	</div>
 	<br>
-	<div class="container">
-		<div class="row   mb-2" >
-			<div class="col-md-4">
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<a href="#"
-							class="btn btn-primary   primary-background text:white">Read
-							More</a>
-					</div>
+	<main>
+		<div class="container">
+			<div class="row   mt-4">
+	
+		
+				<div class="col-md-4">
+				<!-- categories -->
+				<div class="list-group">
+  <a onclick="getPosts(0,this)"  href="#" class="  c-link primary-background list-group-item list-group-item-action active">
+    All Posts
+  </a>
+		<%
+								postDao pod = new postDao(ConnectionProvider.getConnection());
+								ArrayList<category> lst = pod.getAllCategories();
+								for (category c : lst) {
+								%>
+
+<a onclick="getPosts(<%=c.getId() %>,this)" href="#" class="  c-link list-group-item list-group-item-action disabled"><%=c.getName() %></a>
+
+								<%
+								}
+								%>
+</div>
 				</div>
-			</div>	<div class="col-md-4">
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<a href="#"
-							class="btn btn-primary   primary-background text:white">Read
-							More</a>
-					</div>
+				<div class="col-md-8"   >
+				<!-- posts -->
+				<div id="loader"  class="  text-center container">
+				<i class="fa fa-refresh  fa-4x  fa-spin"></i>
+				<h3 class="mt-3"> Loading......</h3>
 				</div>
-			</div>	<div class="col-md-4">
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<a href="#"
-							class="btn btn-primary   primary-background text:white">Read
-							More</a>
-					</div>
+				
+				<div  id="post-container"  class="container-fluid">
+				
 				</div>
-			</div>
-		</div>	<div class="row">
-			<div class="col-md-4">
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<a href="#"
-							class="btn btn-primary   primary-background text:white">Read
-							More</a>
-					</div>
 				</div>
-			</div>	<div class="col-md-4">
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<a href="#"
-							class="btn btn-primary   primary-background text:white">Read
-							More</a>
-					</div>
-				</div>
-			</div>	<div class="col-md-4">
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
-						<p class="card-text">Some quick example text to build on the
-							card title and make up the bulk of the card's content.</p>
-						<a href="#"
-							class="btn btn-primary   primary-background text:white">Read
-							More</a>
-					</div>
-				</div>
+			
 			</div>
 		</div>
-	</div>
+	</main>
+
+
 	
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
@@ -143,6 +115,41 @@ hello
 		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 		crossorigin="anonymous"></script>
 	<script src="js/my.js" type="text/javascript"></script>
+
+	
+	<script type="text/javascript">
+	function getPosts(catId,temp)
+	{
+		$("#loader").show();
+		$("#post-container").hide();
+		$(".c-link").removeClass('active');
+		$(".c-link").removeClass('primary-background');
+		
+		$.ajax({
+			url:"loadPost.jsp",
+			data:{cid:catId},
+			success:  function(data,textStatus,jqXHR){
+				//console.log(data);
+
+		$("#loader").hide();
+		$("#post-container").show();
+					
+	$("#post-container").html(data);			
+	$(temp).addClass('primary-background');
+	$(temp).addClass('active');
+	
+				
+				}
+		
+		})
+
+	}
+	
+	$(document).ready(function(e)
+			{
+		getPosts(0,$(".c-link")[0]);
+			})
+	</script>
 
 </body>
 </html>
